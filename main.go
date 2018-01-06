@@ -21,60 +21,71 @@ func main() {
 		fmt.Println(errPlayerRead)
 		return
 	}
-	fmt.Println(NumberOfPlayers)
 
 	CellsLayout, errCellRead := readInputs.ReadCellsPositonAndTypes()
 	if errCellRead != nil {
 		fmt.Println(errCellRead)
 		return
 	}
-	fmt.Println(CellsLayout)
 
 	diceOutArray, errDiceRead := readInputs.ReadDiceValues()
 	if errDiceRead != nil {
 		fmt.Println(errDiceRead)
 		return
 	}
-	fmt.Println(diceOutArray)
 
 	playerPairs = InitializePlayers(NumberOfPlayers)
 
-	StartGame(playerPairs, CellsLayout, diceOutArray)
+	finalOutput := StartGame(playerPairs, CellsLayout, diceOutArray)
+
+	for _, player := range finalOutput {
+		fmt.Printf("%d has total worth %d", player.PlayerName, player.NetWorth)
+	}
 }
 
-func StartGame(playersPairs playerPairArray.PlayerPairArray, cellsLayout []string, diceOutArray []int) {
+func StartGame(playersPairs playerPairArray.PlayerPairArray, cellsLayout []string, diceOutArray []int) playerPairArray.PlayerPairArray {
 
 	hotelOwerDict := make(map[int]int)
 	i := 0
 	for _, diceValue := range diceOutArray {
-		player := playersPairs[i]
-		player.CurrentPosition += diceValue
+		playersPairs[i].CurrentPosition += diceValue
 
-		if player.CurrentPosition > len(cellsLayout) {
-			player.CurrentPosition = player.CurrentPosition % len(cellsLayout)
+		for playersPairs[i].CurrentPosition >= len(cellsLayout) {
+			playersPairs[i].CurrentPosition = playersPairs[i].CurrentPosition % len(cellsLayout)
 		}
 
-		if strings.EqualFold(cellsLayout[player.CurrentPosition], constants.Jail) {
-			player.NetWorth -= constants.JailFine
+		if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Jail) {
+			playersPairs[i].NetWorth = playersPairs[i].NetWorth - constants.JailFine
 		}
 
-		if strings.EqualFold(cellsLayout[player.CurrentPosition], constants.Treasure) {
-			player.NetWorth += constants.TreasureValue
+		if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Treasure) {
+			playersPairs[i].NetWorth = playersPairs[i].NetWorth + constants.TreasureValue
 		}
 
-		if strings.EqualFold(cellsLayout[player.CurrentPosition], constants.Hotel) {
-			ownerIndex, owned := hotelOwerDict[player.CurrentPosition]
+		if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Hotel) {
+			ownerIndex, owned := hotelOwerDict[playersPairs[i].CurrentPosition]
 
-			if owned && ownerIndex != player.PlayerIndex {
-				player.NetWorth -= constants.HotelRent
-				playersPairs[ownerIndex].NetWorth += constants.HotelRent
+			if owned && ownerIndex != playersPairs[i].PlayerIndex {
+				playersPairs[i].NetWorth = playersPairs[i].NetWorth - constants.HotelRent
+				playersPairs[ownerIndex].NetWorth = playersPairs[ownerIndex].NetWorth + constants.HotelRent
 			}
-			if !owned && player.NetWorth >= constants.HotelWorth {
-				player.NetWorth -= constants.HotelWorth
-				hotelOwerDict[player.CurrentPosition] = player.PlayerIndex
+			if !owned && playersPairs[i].NetWorth >= constants.HotelWorth {
+				playersPairs[i].NetWorth = playersPairs[i].NetWorth - constants.HotelWorth
+				hotelOwerDict[playersPairs[i].CurrentPosition] = playersPairs[i].PlayerIndex
 			}
+		}
+
+		i++
+		if i == len(playersPairs) {
+			i = i % len(playersPairs)
 		}
 	}
+
+	for _, playerIndex := range hotelOwerDict {
+		playersPairs[playerIndex].NetWorth = playersPairs[playerIndex].NetWorth + constants.HotelWorth
+	}
+
+	return playerPairArray.Sort(playersPairs)
 
 }
 
