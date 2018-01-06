@@ -5,8 +5,10 @@ import (
 )
 
 type PlayerPair struct {
-	PlayerName string
-	NetWorth   int
+	PlayerIndex     int
+	PlayerName      string
+	NetWorth        int
+	CurrentPosition int
 }
 type PlayerPairArray []PlayerPair
 
