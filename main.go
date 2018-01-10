@@ -56,20 +56,15 @@ func StartGame(playersPairs playerPairArray.PlayerPairArray, cellsLayout []strin
 
 		if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Jail) {
 			playersPairs[i].NetWorth = playersPairs[i].NetWorth - constants.JailFine
-		}
-
-		if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Treasure) {
+		} else if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Treasure) {
 			playersPairs[i].NetWorth = playersPairs[i].NetWorth + constants.TreasureValue
-		}
-
-		if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Hotel) {
+		} else if strings.EqualFold(cellsLayout[playersPairs[i].CurrentPosition], constants.Hotel) {
 			ownerIndex, owned := hotelOwerDict[playersPairs[i].CurrentPosition]
 
 			if owned && ownerIndex != playersPairs[i].PlayerIndex {
 				playersPairs[i].NetWorth = playersPairs[i].NetWorth - constants.HotelRent
 				playersPairs[ownerIndex].NetWorth = playersPairs[ownerIndex].NetWorth + constants.HotelRent
-			}
-			if !owned && playersPairs[i].NetWorth >= constants.HotelWorth {
+			} else if !owned && playersPairs[i].NetWorth >= constants.HotelWorth {
 				playersPairs[i].NetWorth = playersPairs[i].NetWorth - constants.HotelWorth
 				hotelOwerDict[playersPairs[i].CurrentPosition] = playersPairs[i].PlayerIndex
 			}

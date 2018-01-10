@@ -19,7 +19,20 @@ func TestCalculateMain(t *testing.T) {
 	finalOutput := StartGame(playerPairs, cellsLayout, diceOutArray)
 
 	for _, player := range finalOutput {
-		fmt.Printf("%d has total worth %d", player.PlayerName, player.NetWorth)
+		fmt.Println("%s has total worth %d", player.PlayerName, player.NetWorth)
+	}
+}
+
+func TestCalculateMainDeeInput(t *testing.T) {
+	NumberOfPlayers := 2
+	cellsLayout := []string{"E", "E", "J", "H", "E", "T", "J", "T", "E", "E", "H", "J", "T", "H", "E", "E", "J", "H", "E", "T", "J", "T", "E", "E", "H", "J", "T", "H", "J", "E", "E", "J", "H", "E", "T", "J", "T", "E", "E", "H", "J", "T", "E", "H", "E"}
+	diceOutArray := []int{4, 4, 4, 12, 8, 5}
+	playerPairs := InitializePlayers(NumberOfPlayers)
+
+	finalOutput := StartGame(playerPairs, cellsLayout, diceOutArray)
+
+	for _, player := range finalOutput {
+		fmt.Println("%s has total worth %d", player.PlayerName, player.NetWorth)
 	}
 }
 
